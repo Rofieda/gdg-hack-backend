@@ -37,7 +37,7 @@ class User(AbstractUser):
     email = models.EmailField(max_length=100, unique=True,default="email@example.com")
     role = models.CharField(
         max_length=20, 
-        choices=[('admin', 'admin'), ('', ''), ('', ''),('','')],  # add user roles here 
+        choices=[('admin', 'admin'), ('student', 'student'), ('enterprise', 'enterprise')],  # add user roles here 
         default='admin'
     )
     created_at = models.DateTimeField(auto_now_add=True)
@@ -74,4 +74,197 @@ class User(AbstractUser):
  #   email = models.EmailField(unique=True)
   #password = models.CharField(max_length=128)
    # role = models.CharField(max_length=50)  #patient , technicien , admin 
+
+
+
+
+
+
+
+
+class Skill(models.Model):
+    name = models.CharField(max_length=255, unique=True)
+    description = models.TextField(blank=True)
+
+    def __str__(self):
+        return self.name
+
+
+
+
+
+class StudentProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='student_profile')
+    bio = models.TextField(blank=True)
+    skills = models.ManyToManyField(Skill, related_name='students', blank=True)    phone = models.CharField(max_length=15, blank=True)  # Assuming phone numbers are stored as strings
+    email = models.EmailField(unique=True)  # Ensuring email uniqueness
+    university = models.CharField(max_length=255, blank=True)
+    #rating = models.FloatField(default=0)
+
+    def __str__(self):
+        return self.user.username
+
+
+
+
+class EnterpriseProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='enterprise_profile')
+    description = models.TextField(blank=True)
+    phone = models.CharField(max_length=15, blank=True)  # Assuming phone numbers are stored as strings
+    email = models.EmailField(unique=True)  # Ensuring email uniqueness
+    industry = models.CharField(max_length=255, blank=True)
+    location = models.CharField(max_length=255, blank=True)
+
+    def __str__(self):
+        return self.user.username
+
+
+
+class TeamProject(models.Model):
+    title = models.CharField(max_length=255)
+    description = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    #members = models.ManyToManyField(StudentProfile, related_name='team_members')
+
+    def __str__(self):
+        return self.title
+
+
+
+#table de laison between 
+class TeamMembership(models.Model):
+    student = models.ForeignKey(StudentProfile, on_delete=models.CASCADE)
+    team_project = models.ForeignKey(TeamProject, on_delete=models.CASCADE)
+    role = models.CharField(max_length=50, choices=[
+        ('leader', 'Leader'),
+        ('member', 'Member'),
+        ('mentor', 'Mentor'),
+    ], default='member')
+    joined_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('student', 'team_project')  # Prevents duplicate entries
+
+    def __str__(self):
+        return f"{self.student.user.username} - {self.team_project.title} ({self.role})"
+
+
+class VirtualExperience(models.Model):
+    STATUS_CHOICES = [
+        ('available', 'Available'),
+        ('sold', 'Sold'),
+    ]
+    student = models.ForeignKey(StudentProfile, on_delete=models.CASCADE, related_name='virtual_experiences')
+    title = models.CharField(max_length=255)
+    description = models.TextField()
+    price = models.DecimalField(max_digits=10, decimal_places=2)
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='available')
+
+    def __str__(self):
+        return self.title
+
+
+class TaskExchange(models.Model):
+    student1 = models.ForeignKey(StudentProfile, on_delete=models.CASCADE, related_name='task_exchanges_sent')
+    student2 = models.ForeignKey(StudentProfile, on_delete=models.CASCADE, related_name='task_exchanges_received')
+    task1 = models.CharField(max_length=255)
+    task2 = models.CharField(max_length=255)
+    status = models.CharField(max_length=10, choices=[('pending', 'Pending'), ('completed', 'Completed')], default='pending')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.student1.user.username} ↔ {self.student2.user.username}"
+
+
+class StudentRating(models.Model):
+    student = models.ForeignKey(StudentProfile, on_delete=models.CASCADE, related_name='ratings')
+    enterprise = models.ForeignKey(EnterpriseProfile, on_delete=models.CASCADE, related_name='given_ratings')
+    rating = models.IntegerField()
+    review = models.TextField(blank=True)
+
+    def __str__(self):
+        return f"{self.student.user.username} - {self.rating}/5"
+
+
+class JobOffer(models.Model):
+    JOB_TYPES = [
+        ('full-time', 'Full-Time'),
+        ('part-time', 'Part-Time'),
+        ('internship', 'Internship'),
+    ]
+    enterprise = models.ForeignKey(EnterpriseProfile, on_delete=models.CASCADE, related_name='job_offers')
+    title = models.CharField(max_length=255)
+    description = models.TextField()
+    requirements = models.TextField()
+    salary = models.CharField(max_length=100, blank=True)
+    location = models.CharField(max_length=255, blank=True)
+    job_type = models.CharField(max_length=15, choices=JOB_TYPES)
+    date_start_job = models.DateField()
+
+    def __str__(self):
+        return self.title
+
+
+
+
+class JobApplication(models.Model):
+    STATUS_CHOICES = [
+        ('pending', 'Pending'),
+        ('accepted', 'Accepted'),
+        ('rejected', 'Rejected'),
+    ]
+    student = models.ForeignKey(StudentProfile, on_delete=models.CASCADE, related_name='applications')
+    job = models.ForeignKey(JobOffer, on_delete=models.CASCADE, related_name='applications')
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='pending')
+
+    def __str__(self):
+        return f"{self.student.user.username} applied to {self.job.title}"
+
+
+class Competition(models.Model):
+    enterprise = models.ForeignKey(EnterpriseProfile, on_delete=models.CASCADE, related_name='competitions')
+    title = models.CharField(max_length=255)
+    description = models.TextField()
+    prize = models.CharField(max_length=255, blank=True)
+    deadline = models.DateField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.title
+
+
+class CompetitionParticipation(models.Model):
+    STATUS_CHOICES = [
+        ('registered', 'Registered'),
+        ('winner', 'Winner'),
+        ('lost', 'Lost'),
+    ]
+    student = models.ForeignKey(StudentProfile, on_delete=models.CASCADE, related_name='participations')
+    competition = models.ForeignKey(Competition, on_delete=models.CASCADE, related_name='participations')
+    status = models.CharField(max_length=15, choices=STATUS_CHOICES, default='registered')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.student.user.username} in {self.competition.title}"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

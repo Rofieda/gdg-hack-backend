@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 
 from pathlib import Path
 from datetime import timedelta
+import dj_database_url
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -78,15 +80,10 @@ WSGI_APPLICATION = 'gdgHack.wsgi.application'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'gdg_hack', 
-        'USER': 'Rofieda', 
-        'PASSWORD': '@MaaMar@14@LD@AND@IMS@HM@',  
-        'HOST': 'localhost', 
-        'PORT': '3306', 
-    }
-}
+     'default': dj_database_url.config(
+         default=os.environ.get('postgresql://gdg_hack_user:UFkBOo9uFpUpiZReIpZi8OizeV8JJjyr@dpg-cuidgnlumphs73bp8msg-a.oregon-postgres.render.com/gdg_hack')
+     )
+ }
 
 
 
