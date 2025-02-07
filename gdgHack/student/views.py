@@ -410,34 +410,58 @@ class CreateTeamProjectView2(CreateAPIView):
 
 
 
-
 class RegisterStudentView(CreateAPIView):
     permission_classes = [AllowAny]  # Allows anyone to register
 
     def post(self, request, *args, **kwargs):
-        email = request.data.get('email')
+        email = request.data.get('email', '').strip().lower()
         password = request.data.get('password')
+        fullname = request.data.get('fullname', '')
+        bio = request.data.get('bio', '')
+        phone = request.data.get('phone', '')
+        university = request.data.get('university', '')
+        major = request.data.get('major', '')
+        year_studying = request.data.get('year_studying', '')
+        status_value = request.data.get('status', True)  # Default to True
+        skills_ids = request.data.get('skills', [])  # Expecting a list of skill IDs
 
-        if not email or not password:
-            return Response({"error": "Email and password are required."}, status=status.HTTP_400_BAD_REQUEST)
+        # Check required fields
+        if not email or not password or not fullname or not major or not year_studying:
+            return Response({"error": "Email, password, fullname, major, and year_studying are required."}, 
+                            status=status.HTTP_400_BAD_REQUEST)
 
-        # Fix: Use email instead of username
-        if User.objects.filter(email=email).exists():
+        # Check if email already exists (case-insensitive)
+        if User.objects.filter(email__iexact=email).exists():
             return Response({"error": "User with this email already exists."}, status=status.HTTP_400_BAD_REQUEST)
 
-        # Fix: Remove username, only use email and password
+        # Create User
         user = User.objects.create_user(email=email, password=password)
         user.save()
 
         # Create StudentProfile
-        student = StudentProfile.objects.create(user=user, email=email)
+        student = StudentProfile.objects.create(
+            user=user,
+            email=email,
+            fullname=fullname,
+            bio=bio,
+            phone=phone,
+            university=university,
+            major=major,
+            year_studying=year_studying,
+            status=status_value
+        )
+
+        # Attach skills if provided
+        if skills_ids:
+            skills = Skill.objects.filter(id__in=skills_ids)  # Fetch skills from DB
+            student.skills.set(skills)
 
         return Response({
             "message": "Student registered successfully!",
             "user_id": user.id,
             "student_id": student.id,
             "email": user.email
-        }, status=status.HTTP_201_CREATED)  
+        }, status=status.HTTP_201_CREATED)
     
 
 class RegisterEnterpriseView(CreateAPIView):
