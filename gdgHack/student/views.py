@@ -440,18 +440,19 @@ class RegisterStudentView(CreateAPIView):
         }, status=status.HTTP_201_CREATED)  
     
 
-
 class RegisterEnterpriseView(CreateAPIView):
     permission_classes = [AllowAny]
 
     def post(self, request, *args, **kwargs):
         email = request.data.get('email')
         password = request.data.get('password')
-        role = request.data.get('role')  # Assuming you have a role field in the User model
+        role = request.data.get('role')  # Ensure role is included in the request
+        name = request.data.get('name', '')
         description = request.data.get('description', '')
         phone = request.data.get('phone', '')
         industry = request.data.get('industry', '')
         location = request.data.get('location', '')
+        web_site = request.data.get('web_site', '')  # Fixed typo
 
         if not email or not password or not role:
             return Response({"error": "Email, password, and role are required."}, status=status.HTTP_400_BAD_REQUEST)
@@ -466,11 +467,13 @@ class RegisterEnterpriseView(CreateAPIView):
         # Create EnterpriseProfile
         enterprise = EnterpriseProfile.objects.create(
             user=user,
+            name=name,  # Added missing name field
             email=email,
             description=description,
             phone=phone,
             industry=industry,
-            location=location
+            location=location,
+            web_site=web_site
         )
 
         return Response({
@@ -479,6 +482,7 @@ class RegisterEnterpriseView(CreateAPIView):
             "enterprise_id": enterprise.id,
             "email": user.email
         }, status=status.HTTP_201_CREATED)
+
     
 
 
@@ -543,3 +547,57 @@ class UserProjectsView(generics.ListAPIView):
         queryset = self.get_queryset()
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data) 
+  
+
+
+
+class ProjectListView(generics.ListAPIView):
+    serializer_class = ProjectSerializer
+    permission_classes = [permissions.IsAuthenticated]  # Ensure user is logged in
+
+    def get_queryset(self):
+        """
+        Retrieve projects where the student_id matches the ID in the request.
+        """
+        student_id = self.kwargs.get('id')  # Get the student ID from the URL
+
+        if not student_id:
+            return Project.objects.none()  # Return empty if no student ID is provided
+
+        # Retrieve projects where student_id matches the requested ID
+        return Project.objects.filter(student_id=student_id)
+
+    def list(self, request, *args, **kwargs):
+        """
+        Return a list of projects for the given student ID.
+        """
+        queryset = self.get_queryset()
+
+        if not queryset.exists():
+            return Response({"message": "No projects found for this student."}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+
+
+
+
+class GetStudentIDView(APIView):
+    permission_classes = [permissions.IsAuthenticated]  # Ensure user is logged in
+
+    def get(self, request, *args, **kwargs):
+        """
+        Retrieve the student ID of the authenticated user.
+        """
+        user = request.user  # Get the authenticated user
+
+        try:
+            student_profile = StudentProfile.objects.get(user=user)  # Find the student's profile
+            return Response({"student_id": student_profile.id}, status=status.HTTP_200_OK)
+        
+        except StudentProfile.DoesNotExist:
+            return Response({"message": "Student profile not found."}, status=status.HTTP_404_NOT_FOUND)
+
+
+

@@ -4,7 +4,7 @@ from django.urls import path
 from .views import StudentProfileCreateView , StudentProfileRetrieveView , CreateTeamProjectView , AddMemberToTeamView ,CreateTaskExchangeView , AddRatingView , AddRatingView , StudentRatingsListView
 from .views import SearchJobByTypeView , SearchJobByLocationView , SearchJobBySalaryView , SearchJobByStartDateView , CreateJobOfferView , CreateEnterpriseProfileView , CreateTeamProjectView2 , RegisterStudentView  , RegisterEnterpriseView ,EntrpriseProfileRetrieveView 
 from . import views 
-from .views import ProjectCreateView , StudentProjectsListView  , UserProjectsView 
+from .views import ProjectCreateView , StudentProjectsListView  , UserProjectsView , ProjectListView  , GetStudentIDView
 urlpatterns = [
     path('studentprofile/', StudentProfileCreateView.as_view(), name='student-profile-create'), #creat             # check
     path('studentprofile/<int:id>/', StudentProfileRetrieveView.as_view(), name='student-profile-detail'),         #chck
@@ -38,10 +38,12 @@ urlpatterns = [
     path('job_offers/create/', CreateJobOfferView.as_view(), name='job_offer_create'),
     path('enterprise_profiles/create/', CreateEnterpriseProfileView.as_view(), name='enterprise_profile_create'),
 
-        path('team_project2/create/', CreateTeamProjectView2.as_view(), name='create-team-project'),
+    path('team_project2/create/', CreateTeamProjectView2.as_view(), name='create-team-project'),
     path('register/student/', RegisterStudentView.as_view(), name='register-student'),
-        path('register/enterprise/', RegisterEnterpriseView.as_view(), name='register-enterprise'),
-        path('my-projects/', UserProjectsView.as_view(), name='user-projects'),
+    path('register/enterprise/', RegisterEnterpriseView.as_view(), name='register-enterprise'),
+        
+        
+    path('my-projects/', UserProjectsView.as_view(), name='user-projects'),
 
 
 
@@ -53,7 +55,9 @@ urlpatterns = [
 #    path('projects/<int:student_id>/', StudentProjectsListView.as_view(), name='student-projects-list'),
 
 
-path('projectsList/', UserProjectsView.as_view(), name='user-projects'),
+    path('projects/<int:id>/', ProjectListView.as_view(), name='project-list'),
+        path('get-student-id/', GetStudentIDView.as_view(), name='get-student-id'),
+
 
 ]
 

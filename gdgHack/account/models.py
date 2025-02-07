@@ -94,6 +94,7 @@ class Skill(models.Model):
 
 
 class StudentProfile(models.Model):
+    fullname = models.CharField(max_length=100) 
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='student_profile')
     bio = models.TextField(blank=True)
     skills = models.ManyToManyField(Skill, related_name='students', blank=True)  
@@ -101,6 +102,8 @@ class StudentProfile(models.Model):
     email = models.EmailField(unique=True)  # Ensuring email uniqueness
     university = models.CharField(max_length=255, blank=True)
     status = models.BooleanField(default=True)
+    major = models.CharField(max_length=100)
+    year_studying = models.CharField(max_length=10)
     def __str__(self):
         return self.user.username
     
@@ -118,12 +121,14 @@ class Project(models.Model):
     
 
 class EnterpriseProfile(models.Model):
+    name=models.CharField(max_length=50)
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='enterprise_profile')
     description = models.TextField(blank=True)
     phone = models.CharField(max_length=15, blank=True)  # Assuming phone numbers are stored as strings
     email = models.EmailField(unique=True)  # Ensuring email uniqueness
     industry = models.CharField(max_length=255, blank=True)
     location = models.CharField(max_length=255, blank=True)
+    web_site = models.CharField(max_length=100)
 
     def __str__(self):
         return self.user.username
