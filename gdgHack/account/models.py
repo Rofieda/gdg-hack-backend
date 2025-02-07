@@ -96,7 +96,8 @@ class Skill(models.Model):
 class StudentProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='student_profile')
     bio = models.TextField(blank=True)
-    skills = models.ManyToManyField(Skill, related_name='students', blank=True)    phone = models.CharField(max_length=15, blank=True)  # Assuming phone numbers are stored as strings
+    skills = models.ManyToManyField(Skill, related_name='students', blank=True)  
+    phone = models.CharField(max_length=15, blank=True)  # Assuming phone numbers are stored as strings
     email = models.EmailField(unique=True)  # Ensuring email uniqueness
     university = models.CharField(max_length=255, blank=True)
     #rating = models.FloatField(default=0)

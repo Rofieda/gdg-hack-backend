@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'account',
     'rest_framework_simplejwt.token_blacklist',
+    'student',
 ]
 
 MIDDLEWARE = [
@@ -80,11 +81,12 @@ WSGI_APPLICATION = 'gdgHack.wsgi.application'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
 DATABASES = {
-     'default': dj_database_url.config(
-         default=os.environ.get('postgresql://gdg_hack_user:UFkBOo9uFpUpiZReIpZi8OizeV8JJjyr@dpg-cuidgnlumphs73bp8msg-a.oregon-postgres.render.com/gdg_hack')
-     )
- }
-
+    'default': dj_database_url.config(
+        default="postgresql://gdg_hack_user:UFkBOo9uFpUpiZReIpZi8OizeV8JJjyr@dpg-cuidgnlumphs73bp8msg-a.oregon-postgres.render.com/gdg_hack",
+        conn_max_age=600,
+        ssl_require=True
+    )
+}
 
 
 # Password validation
@@ -141,8 +143,10 @@ REST_FRAMEWORK = {
     
 }
 
+CSRF_COOKIE_NAME = 'csrftoken'  # The default name
+CSRF_COOKIE_SECURE = False  # Set to True if using HTTPS
 
-AUTH_USER_MODEL = 'account.User'
+AUTH_USER_MODEL = 'account.User' 
 
 
 SIMPLE_JWT = {

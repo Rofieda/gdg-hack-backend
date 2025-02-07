@@ -34,7 +34,6 @@ from drf_yasg import openapi
 class RegisterUserView(APIView):
    
 
-    permission_classes = [IsAuthenticated]
 
     def post(self, request):
 
