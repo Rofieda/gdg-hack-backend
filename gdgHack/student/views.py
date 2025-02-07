@@ -1,7 +1,7 @@
 # views.py
 
 from rest_framework import generics
-from account.models import StudentProfile ,User , Project , TeamProject , TeamMembership  , VirtualExperience , TaskExchange , StudentRating , JobOffer , EnterpriseProfile
+from account.models import StudentProfile ,User , Project , TeamProject , TeamMembership  , VirtualExperience , TaskExchange , StudentRating , JobOffer , EnterpriseProfile , Skill
 from .serializers import StudentProfileSerializer , TeamProjectSerializer ,ProjectSerializer, VirtualExperienceSerializer , TaskExchangeSerializer ,StudentRatingSerializer , JobOfferSerializer , EnterpriseProfileSerializer
  
 from rest_framework import status
@@ -409,7 +409,6 @@ class CreateTeamProjectView2(CreateAPIView):
 
 
 
-
 class RegisterStudentView(CreateAPIView):
     permission_classes = [AllowAny]  # Allows anyone to register
 
@@ -423,7 +422,7 @@ class RegisterStudentView(CreateAPIView):
         major = request.data.get('major', '')
         year_studying = request.data.get('year_studying', '')
         status_value = request.data.get('status', True)  # Default to True
-        skills_ids = request.data.get('skills', [])  # Expecting a list of skill IDs
+        skills_names = request.data.get('skills', [])  #  list of skill names
 
         # Check required fields
         if not email or not password or not fullname or not major or not year_studying:
@@ -452,9 +451,13 @@ class RegisterStudentView(CreateAPIView):
         )
 
         # Attach skills if provided
-        if skills_ids:
-            skills = Skill.objects.filter(id__in=skills_ids)  # Fetch skills from DB
-            student.skills.set(skills)
+        if skills_names:
+            skills = []
+            for skill_name in skills_names:
+                skill, created = Skill.objects.get_or_create(name=skill_name.strip())  # Create skill if not exists
+                skills.append(skill)
+
+            student.skills.set(skills)  # Assign skills to student
 
         return Response({
             "message": "Student registered successfully!",
@@ -462,6 +465,7 @@ class RegisterStudentView(CreateAPIView):
             "student_id": student.id,
             "email": user.email
         }, status=status.HTTP_201_CREATED)
+
     
 
 class RegisterEnterpriseView(CreateAPIView):
@@ -577,7 +581,7 @@ class UserProjectsView(generics.ListAPIView):
 
 class ProjectListView(generics.ListAPIView):
     serializer_class = ProjectSerializer
-    permission_classes = [permissions.IsAuthenticated]  # Ensure user is logged in
+  #  permission_classes = [permissions.IsAuthenticated]  # Ensure user is logged in
 
     def get_queryset(self):
         """

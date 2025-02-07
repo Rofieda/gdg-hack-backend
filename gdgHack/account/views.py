@@ -6,7 +6,7 @@ from rest_framework.response import Response
 from rest_framework import status
 
 from .serializers import    LoginSerializer
-from .models import User 
+from .models import User  , StudentProfile , EnterpriseProfile
 
 from datetime import timedelta
 from django.http import JsonResponse
@@ -55,9 +55,9 @@ class LoginView(TokenObtainPairView):
     Custom login view that returns JWT access and refresh tokens along with basic user details.
     The refresh token is stored in an HttpOnly cookie for secure client-side access.
     """
-  
+
     serializer_class = LoginSerializer  # Custom serializer for login
-  
+
     def post(self, request, *args, **kwargs):
         # Validate email and password using the custom serializer
         serializer = self.get_serializer(data=request.data)
@@ -69,11 +69,31 @@ class LoginView(TokenObtainPairView):
             access_token = str(refresh.access_token)
             refresh_token = str(refresh)
 
+            # Get user role
+            role = user.role  # Assuming there is a `role` field in User model
+            student_id = None
+            enterprise_id = None
+
+            # Check if the user is a student
+            if role == 'student':
+                student = StudentProfile.objects.filter(user=user).first()
+                if student:
+                    student_id = student.id
+
+            # Check if the user is an enterprise
+            elif role == 'enterprise':
+                enterprise = EnterpriseProfile.objects.filter(user=user).first()
+                if enterprise:
+                    enterprise_id = enterprise.id
+
             # Prepare the response data with user details
             response_data = {
                 'access': access_token,
                 'refresh': refresh_token,
                 'userID': user.id,
+                'role': role,
+                'student_id': student_id,
+                'enterprise_id': enterprise_id,
                 'first_name': user.first_name,
                 'last_name': user.last_name,
                 'email': user.email,

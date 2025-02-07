@@ -51,7 +51,7 @@ class TaskExchangeSerializer(serializers.ModelSerializer):
 class StudentRatingSerializer(serializers.ModelSerializer):
     class Meta:
         model = StudentRating
-        fields = ['review' , 'rating' ,'student' ]  # Include all fields
+        fields = ['review' , 'rating' ,'student' ,'enterprise']  # Include all fields
 
 
 
