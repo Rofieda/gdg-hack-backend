@@ -92,20 +92,46 @@ class Skill(models.Model):
 
 
 
-
 class StudentProfile(models.Model):
+    MAJOR_CHOICES = [
+        ("Computer Science", "Computer Science"),
+        ("MIT", "MIT"),
+        ("Electrical Engineering", "Electrical Engineering"),
+        ("Mechanical Engineering", "Mechanical Engineering"),
+        ("Civil Engineering", "Civil Engineering"),
+        ("Autre", "Autre"),
+    ]
+
+    UNIVERSITY_CHOICES = [
+        ("ENP", "ENP"),
+        ("USTHB", "USTHB"),
+        ("ESI", "ESI"),
+        ("UMBB", "UMBB"),
+        ("Autre", "Autre"),
+    ]
+
+    YEAR_CHOICES = [
+        ("1st", "1st"),
+        ("2nd", "2nd"),
+        ("3rd", "3rd"),
+        ("4th", "4th"),
+        ("Autre", "Autre"),
+    ]
+
     fullname = models.CharField(max_length=100) 
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='student_profile')
     bio = models.TextField(blank=True)
     skills = models.ManyToManyField(Skill, related_name='students', blank=True)  
-    phone = models.CharField(max_length=15, blank=True)  # Assuming phone numbers are stored as strings
-    email = models.EmailField(unique=True)  # Ensuring email uniqueness
-    university = models.CharField(max_length=255, blank=True)
+    phone = models.CharField(max_length=15, blank=True)
+    email = models.EmailField(unique=True)
+    university = models.CharField(max_length=30, choices=UNIVERSITY_CHOICES, blank=True)
     status = models.BooleanField(default=True)
-    major = models.CharField(max_length=100)
-    year_studying = models.CharField(max_length=10)
+    major = models.CharField(max_length=50, choices=MAJOR_CHOICES)
+    year_studying = models.CharField(max_length=20, choices=YEAR_CHOICES)
+
     def __str__(self):
         return self.user.username
+
     
 
 class Project(models.Model):

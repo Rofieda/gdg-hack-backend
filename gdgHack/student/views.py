@@ -618,3 +618,28 @@ class GetStudentIDView(APIView):
 
 
 
+
+
+
+
+
+class StudentSearchView(generics.ListAPIView):
+    serializer_class = StudentProfileSerializer
+
+    def get_queryset(self):
+        """
+        Filters students by university, major, and year of study if query parameters are provided.
+        """
+        queryset = StudentProfile.objects.all()
+        university = self.request.query_params.get('university', None)
+        major = self.request.query_params.get('major', None)
+        year_studying = self.request.query_params.get('year_studying', None)
+
+        if university:
+            queryset = queryset.filter(university=university)
+        if major:
+            queryset = queryset.filter(major=major)
+        if year_studying:
+            queryset = queryset.filter(year_studying=year_studying)
+
+        return queryset
