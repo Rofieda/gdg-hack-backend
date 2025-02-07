@@ -282,18 +282,7 @@ class AddRatingView(CreateAPIView):
     permission_classes = [IsAuthenticated]  # Ensure only authenticated users can rate
 
     def perform_create(self, serializer):
-        # Get the authenticated user
-        user = self.request.user
-
-        # Find the enterprise linked to this user
-        try:
-            enterprise = EnterpriseProfile.objects.get(user=user)
-        except EnterpriseProfile.DoesNotExist:
-            return Response({"error": "You must be an enterprise to add a rating."}, status=status.HTTP_403_FORBIDDEN)
-
-        # Save the rating with the retrieved enterprise ID
-        serializer.save(enterprise=enterprise)
-
+        serializer.save()  # Just save the provided data without modifying it
 
 
 
