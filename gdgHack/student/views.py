@@ -4,6 +4,7 @@ from rest_framework import generics
 from account.models import StudentProfile ,User , Project , TeamProject , TeamMembership  , VirtualExperience , TaskExchange , StudentRating , JobOffer , EnterpriseProfile , Skill
 from .serializers import StudentProfileSerializer , TeamProjectSerializer ,ProjectSerializer, VirtualExperienceSerializer , TaskExchangeSerializer ,StudentRatingSerializer , JobOfferSerializer , EnterpriseProfileSerializer
  
+from rest_framework import serializers
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -204,6 +205,10 @@ class VirtualExperienceListCreateView(ListCreateAPIView):
     queryset = VirtualExperience.objects.all()
     serializer_class = VirtualExperienceSerializer
 
+
+
+
+
 class CreateTaskExchangeView(CreateAPIView):
     queryset = TaskExchange.objects.all()
     serializer_class = TaskExchangeSerializer
@@ -211,31 +216,32 @@ class CreateTaskExchangeView(CreateAPIView):
     permission_classes = []  # Allow anyone to access
 
     def perform_create(self, serializer):
-        student1_id = self.request.user.id  # Assuming the logged-in user is student1
-        student2_id = self.request.data.get('student2')  # ID of the student to exchange with
+        student1_id = self.request.data.get('student1')  # Get student1 from request
+        student2_id = self.request.data.get('student2')  # Get student2 from request
 
-        # Validate student1 exists (this is usually the logged-in user)
+        if not student1_id or not student2_id:
+            raise serializers.ValidationError({"error": "Both student1 and student2 are required."})
+
+        # Validate student1 exists
         try:
             student1 = StudentProfile.objects.get(id=student1_id)
         except StudentProfile.DoesNotExist:
-            return Response({"error": "Student1 with given ID does not exist."}, status=status.HTTP_400_BAD_REQUEST)
+            raise serializers.ValidationError({"error": "Student1 does not exist."})
 
         # Validate student2 exists
         try:
             student2 = StudentProfile.objects.get(id=student2_id)
         except StudentProfile.DoesNotExist:
-            return Response({"error": "Student2 with given ID does not exist."}, status=status.HTTP_400_BAD_REQUEST)
+            raise serializers.ValidationError({"error": "Student2 does not exist."})
 
         # Get status from request, default to "pending"
         status_value = self.request.data.get('status', 'pending')
         if status_value not in ['pending', 'completed']:
-            return Response({"error": "Invalid status. Choose 'pending' or 'completed'."}, status=status.HTTP_400_BAD_REQUEST)
+            raise serializers.ValidationError({"error": "Invalid status."})
 
         # Save TaskExchange with provided students
-        task_exchange = serializer.save(student1=student1, student2=student2, status=status_value)
+        serializer.save(student1=student1, student2=student2, status=status_value)
 
-        # Return the newly created task exchange in the response
-        return Response(TaskExchangeSerializer(task_exchange).data, status=status.HTTP_201_CREATED)
 
 
 

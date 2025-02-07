@@ -43,7 +43,7 @@ class VirtualExperienceSerializer(serializers.ModelSerializer):
 class TaskExchangeSerializer(serializers.ModelSerializer):
     class Meta:
         model = TaskExchange
-        fields = ['id', 'student2', 'task1', 'task2', 'status', 'created_at']
+        fields = ['id', 'student1','student2', 'task1', 'task2', 'status', 'created_at']
         read_only_fields = ['id', 'status', 'created_at']
 
 
