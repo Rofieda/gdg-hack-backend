@@ -1,7 +1,7 @@
 # serializers.py
 
 from rest_framework import serializers
-from account.models import StudentProfile, Skill ,TeamProject , VirtualExperience , TaskExchange , StudentRating , JobOffer , EnterpriseProfile , TeamMembership , TeamMembership
+from account.models import StudentProfile, Skill ,TeamProject , VirtualExperience , Project , TaskExchange , StudentRating , JobOffer , EnterpriseProfile , TeamMembership , TeamMembership
 
 class SkillSerializer(serializers.ModelSerializer):
     class Meta:
@@ -134,3 +134,20 @@ class TeamProjectSerializer(serializers.ModelSerializer):
 
 
 
+
+#################################################################################################""
+#entrprise part 
+
+class EntrpriseProfileSerializer(serializers.ModelSerializer):
+    skills = SkillSerializer(many=True, read_only=True)  # Nested skills representation
+
+    class Meta:
+        model = EnterpriseProfile
+        fields = ['id', 'user', 'location', 'industry', 'phone', 'email', 'description' ]
+    
+
+
+class ProjectSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Project
+        fields = '__all__'  # Include all fields

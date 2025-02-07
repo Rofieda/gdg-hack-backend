@@ -100,13 +100,22 @@ class StudentProfile(models.Model):
     phone = models.CharField(max_length=15, blank=True)  # Assuming phone numbers are stored as strings
     email = models.EmailField(unique=True)  # Ensuring email uniqueness
     university = models.CharField(max_length=255, blank=True)
-    #rating = models.FloatField(default=0)
-
+    status = models.BooleanField(default=True)
     def __str__(self):
         return self.user.username
+    
+
+class Project(models.Model):
+    student = models.ForeignKey(User, on_delete=models.CASCADE, related_name='student') 
+    title = models.CharField(max_length=255)  # Added max_length
+    description = models.TextField(blank=True, null=True)  # Optional project description
+    date_debut = models.DateTimeField(auto_now_add=True)  # Timestamp for creation
+    date_fin = models.DateTimeField(auto_now_add=True)  # Timestamp for creation
 
 
-
+    def __str__(self):
+        return self.title
+    
 
 class EnterpriseProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='enterprise_profile')
@@ -213,6 +222,7 @@ class JobApplication(models.Model):
         ('pending', 'Pending'),
         ('accepted', 'Accepted'),
         ('rejected', 'Rejected'),
+
     ]
     student = models.ForeignKey(StudentProfile, on_delete=models.CASCADE, related_name='applications')
     job = models.ForeignKey(JobOffer, on_delete=models.CASCADE, related_name='applications')

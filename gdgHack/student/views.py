@@ -1,8 +1,8 @@
 # views.py
 
 from rest_framework import generics
-from account.models import StudentProfile ,User ,  TeamProject , TeamMembership  , VirtualExperience , TaskExchange , StudentRating , JobOffer , EnterpriseProfile
-from .serializers import StudentProfileSerializer , TeamProjectSerializer , VirtualExperienceSerializer , TaskExchangeSerializer ,StudentRatingSerializer , JobOfferSerializer , EnterpriseProfileSerializer
+from account.models import StudentProfile ,User , Project , TeamProject , TeamMembership  , VirtualExperience , TaskExchange , StudentRating , JobOffer , EnterpriseProfile
+from .serializers import StudentProfileSerializer , TeamProjectSerializer ,ProjectSerializer, VirtualExperienceSerializer , TaskExchangeSerializer ,StudentRatingSerializer , JobOfferSerializer , EnterpriseProfileSerializer
  
 from rest_framework import status
 from rest_framework.decorators import api_view
@@ -21,7 +21,7 @@ from rest_framework.generics import UpdateAPIView
 from rest_framework.generics import ListAPIView
 from rest_framework.generics import CreateAPIView
 from rest_framework.exceptions import ValidationError
-
+from rest_framework import generics, permissions
 from rest_framework.permissions import AllowAny
 
 
@@ -479,3 +479,67 @@ class RegisterEnterpriseView(CreateAPIView):
             "enterprise_id": enterprise.id,
             "email": user.email
         }, status=status.HTTP_201_CREATED)
+    
+
+
+
+
+
+####################################################################################################################""
+#entrprise part 
+
+
+class EntrpriseProfileRetrieveView(generics.RetrieveAPIView):
+    queryset = EnterpriseProfile.objects.all()
+    serializer_class = EnterpriseProfileSerializer
+    lookup_field = 'id'  
+
+
+
+class SearchStudentAvailaibleView(generics.ListAPIView):
+    serializer_class = JobOfferSerializer
+
+    def get_queryset(self):
+        location = self.request.query_params.get('location', None)
+        if location:
+            return JobOffer.objects.filter(location__icontains=location)
+        return JobOffer.objects.all()
+    
+
+
+
+class ProjectCreateView(generics.CreateAPIView):
+    serializer_class = ProjectSerializer
+
+    def perform_create(self, serializer):
+        serializer.save()  # Save project with given data
+
+
+
+class StudentProjectsListView(generics.ListAPIView):
+    serializer_class = ProjectSerializer
+
+    def get_queryset(self):
+        student_id = self.kwargs['student_id']  # Get student ID from URL
+        return Project.objects.filter(student_id=student_id)  # Filter projects by student ID
+    
+
+
+
+class UserProjectsView(generics.ListAPIView):
+    serializer_class = ProjectSerializer
+    permission_classes = [permissions.IsAuthenticated]  # Ensure user is logged in
+
+    def get_queryset(self):
+        """
+        Retrieve only the projects of the logged-in user.
+        """
+        return Project.objects.filter(student=self.request.user)
+
+    def list(self, request, *args, **kwargs):
+        """
+        Custom response to return projects of the authenticated user.
+        """
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data) 
