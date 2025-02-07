@@ -41,10 +41,14 @@ class VirtualExperienceSerializer(serializers.ModelSerializer):
 
 
 class TaskExchangeSerializer(serializers.ModelSerializer):
+    student1_id = serializers.PrimaryKeyRelatedField(source='student1', queryset=StudentProfile.objects.all())
+    student1_name = serializers.CharField(source='student1.fullname', read_only=True)
+    student2_id = serializers.PrimaryKeyRelatedField(source='student2', queryset=StudentProfile.objects.all())
+    student2_name = serializers.CharField(source='student2.fullname', read_only=True)
+
     class Meta:
         model = TaskExchange
-        fields = ['id', 'student1','student2', 'task1', 'task2', 'status', 'created_at']
-        read_only_fields = ['id', 'status', 'created_at']
+        fields = ['id', 'student1_id', 'student1_name', 'student2_id', 'student2_name', 'task1', 'task2', 'status', 'created_at']
 
 
 
