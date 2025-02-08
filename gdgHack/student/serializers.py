@@ -47,8 +47,8 @@ class TaskExchangeSerializer(serializers.ModelSerializer):
     student2 = serializers.PrimaryKeyRelatedField(
         queryset=StudentProfile.objects.all(), required=False, allow_null=True
     )
-    student1_name = serializers.CharField(source="student1.name", read_only=True)
-    student2_name = serializers.CharField(source="student2.name", read_only=True)
+    student1_name = serializers.CharField(source="student1.fullname", read_only=True)
+    student2_name = serializers.CharField(source="student2.fullname", read_only=True)
 
     class Meta:
         model = TaskExchange
