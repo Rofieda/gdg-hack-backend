@@ -4,7 +4,7 @@ from django.urls import path
 from .views import StudentProfileCreateView , StudentProfileRetrieveView , CreateTeamProjectView , AddMemberToTeamView ,CreateTaskExchangeView , AddRatingView , AddRatingView , StudentRatingsListView
 from .views import SearchJobByTypeView , SearchJobByLocationView , SearchJobBySalaryView , SearchJobByStartDateView , CreateJobOfferView , CreateEnterpriseProfileView , CreateTeamProjectView2 , RegisterStudentView  , RegisterEnterpriseView ,EntrpriseProfileRetrieveView 
 from . import views 
-from .views import ProjectCreateView , StudentProjectsListView  , UserProjectsView , ProjectListView  , GetStudentIDView , StudentSearchView , CreateHackathonView , HackathonsByEnterpriseView
+from .views import ProjectCreateView , StudentProjectsListView  , UserProjectsView , ProjectListView  , GetStudentIDView  , StudentGeneralSearchView, StudentSearchView , CreateHackathonView , HackathonsByEnterpriseView
 urlpatterns = [
     path('studentprofile/', StudentProfileCreateView.as_view(), name='student-profile-create'), #creat             # check
     path('studentprofile/<int:id>/', StudentProfileRetrieveView.as_view(), name='student-profile-detail'),         #chck
@@ -58,7 +58,9 @@ urlpatterns = [
     path('projects/<int:id>/', ProjectListView.as_view(), name='project-list'),
     path('get-student-id/', GetStudentIDView.as_view(), name='get-student-id'),
 
-        path('SearchStudentByUniv/', StudentSearchView.as_view(), name='student-list'),
+    path('SearchStudentByUniv/', StudentSearchView.as_view(), name='student-list'),
+    path('studentsGeneralSearch/', StudentGeneralSearchView.as_view(), name='student-general-search'),
+
 
 
 

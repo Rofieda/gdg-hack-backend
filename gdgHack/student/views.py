@@ -24,6 +24,7 @@ from rest_framework.generics import CreateAPIView
 from rest_framework.exceptions import ValidationError
 from rest_framework import generics, permissions
 from rest_framework.permissions import AllowAny
+from django.db.models import Q
 
 
 class StudentProfileCreateView(generics.CreateAPIView):
@@ -685,3 +686,27 @@ class HackathonsByEnterpriseView(generics.ListAPIView):
     def get_queryset(self):
         enterprise_id = self.kwargs['enterprise_id']
         return Hackathon.objects.filter(enterprise__id=enterprise_id) 
+    
+
+
+class StudentGeneralSearchView(ListAPIView):
+    serializer_class = StudentProfileSerializer
+
+    def get_queryset(self):
+        queryset = StudentProfile.objects.all()
+        query = self.request.query_params.get('q', None)
+
+        if query:
+            queryset = queryset.filter(
+                Q(fullname__icontains=query) |  
+                Q(university__icontains=query) |  
+                Q(major__icontains=query) |  
+                Q(year_studying__icontains=query) |  
+                Q(skills__name__icontains=query) |  
+                Q(bio__icontains=query) |    
+                Q(phone__icontains=query) |    
+                Q(email__icontains=query)  | 
+                Q(status__icontains=query)
+            ).distinct()
+
+        return queryset
