@@ -86,7 +86,7 @@ WSGI_APPLICATION = 'gdgHack.wsgi.application'
 
 DATABASES = {
     'default': dj_database_url.config(
-        default="postgresql://gdg_hack_user:UFkBOo9uFpUpiZReIpZi8OizeV8JJjyr@dpg-cuidgnlumphs73bp8msg-a.oregon-postgres.render.com/gdg_hack",
+        default="postgresql://gdg_hack_bdd_user:8b4W2eI3Pb9MnawSqft1rlb4RpbybCmH@dpg-cujfgl3v2p9s738087l0-a.oregon-postgres.render.com/gdg_hack_bdd",
         conn_max_age=600,
         ssl_require=True
     )

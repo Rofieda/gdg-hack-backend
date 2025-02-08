@@ -92,11 +92,7 @@ class JobOfferSerializer(serializers.ModelSerializer):
         model = JobOffer
         fields = '__all__'  # Includes all fields from the JobOffer model
 
-    def validate(self, data):
-        # You can add custom validation logic here if necessary
-        if data.get('job_type') not in ['full-time', 'part-time', 'internship']:
-            raise serializers.ValidationError("Invalid job type.")
-        return data
+    
     
 
 

@@ -198,7 +198,7 @@ class VirtualExperience(models.Model):
     student = models.ForeignKey(StudentProfile, on_delete=models.CASCADE, related_name='virtual_experiences')
     title = models.CharField(max_length=255)
     description = models.TextField()
-    price = models.DecimalField(max_digits=10, decimal_places=2)
+    price = models.CharField(max_length=20) 
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='available')
 
     def __str__(self):
@@ -231,18 +231,13 @@ class StudentRating(models.Model):
 
 
 class JobOffer(models.Model):
-    JOB_TYPES = [
-        ('full-time', 'Full-Time'),
-        ('part-time', 'Part-Time'),
-        ('internship', 'Internship'),
-    ]
+    
     enterprise = models.ForeignKey(EnterpriseProfile, on_delete=models.CASCADE, related_name='job_offers')
     title = models.CharField(max_length=255)
     description = models.TextField()
     requirements = models.TextField()
     salary = models.CharField(max_length=100, blank=True)
     location = models.CharField(max_length=255, blank=True)
-    job_type = models.CharField(max_length=15, choices=JOB_TYPES)
     date_start_job = models.DateField()
 
     def __str__(self):
