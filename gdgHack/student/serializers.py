@@ -9,7 +9,7 @@ class SkillSerializer(serializers.ModelSerializer):
         fields = ['id', 'name', 'description']
 
 class StudentProfileSerializer(serializers.ModelSerializer):
-    fullname = serializers.CharField()  # Ensure fullname is included
+    fullname = serializers.CharField()  
 
     class Meta:
         model = StudentProfile
@@ -36,9 +36,8 @@ class TeamProjectSerializer(serializers.ModelSerializer):
 class VirtualExperienceSerializer(serializers.ModelSerializer):
     class Meta:
         model = VirtualExperience
-        fields = '__all__'  # This will serialize all fields in the model
+        fields = '__all__'  
 
-    # Optional: You can add custom validation or other logic here
 
 class TaskExchangeSerializer(serializers.ModelSerializer):
     student1 = serializers.PrimaryKeyRelatedField(
@@ -68,8 +67,7 @@ class TaskExchangeSerializer(serializers.ModelSerializer):
 class StudentRatingSerializer(serializers.ModelSerializer):
     class Meta:
         model = StudentRating
-        fields = ['review' , 'rating' ,'student' ,'enterprise']  # Include all fields
-
+        fields = ['review' , 'rating' ,'student' ,'enterprise']  
 
 
 
@@ -80,7 +78,6 @@ class EnterpriseProfileSerializer(serializers.ModelSerializer):
         fields = ['id', 'user', 'description', 'phone', 'email', 'industry', 'location' , 'name']
 
     def validate(self, data):
-        # You can add custom validation logic here if necessary
         return data
 
 
@@ -90,35 +87,13 @@ class EnterpriseProfileSerializer(serializers.ModelSerializer):
 class JobOfferSerializer(serializers.ModelSerializer):
     class Meta:
         model = JobOffer
-        fields = '__all__'  # Includes all fields from the JobOffer model
-
-    
-    
-
-
-
-
-
-
-
+        fields = '__all__' 
 
 
 class HackatonSerializer(serializers.ModelSerializer):
     class Meta:
         model = Hackathon
         fields='__all__'
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -154,9 +129,8 @@ class TeamProjectSerializer(serializers.ModelSerializer):
 
 
 
-
 #################################################################################################""
-#entrprise part 
+#entr part 
 
 class EntrpriseProfileSerializer(serializers.ModelSerializer):
     skills = SkillSerializer(many=True, read_only=True)  # Nested skills representation
@@ -170,4 +144,4 @@ class EntrpriseProfileSerializer(serializers.ModelSerializer):
 class ProjectSerializer(serializers.ModelSerializer):
     class Meta:
         model = Project
-        fields = '__all__'  # Include all fields
+        fields = '__all__' 
