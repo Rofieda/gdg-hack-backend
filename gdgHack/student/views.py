@@ -1,8 +1,8 @@
 # views.py
 
 from rest_framework import generics
-from account.models import StudentProfile ,User , Project , TeamProject , TeamMembership  , VirtualExperience , TaskExchange , StudentRating , JobOffer , EnterpriseProfile , Skill
-from .serializers import StudentProfileSerializer , TeamProjectSerializer ,ProjectSerializer, VirtualExperienceSerializer , TaskExchangeSerializer ,StudentRatingSerializer , JobOfferSerializer , EnterpriseProfileSerializer
+from account.models import StudentProfile ,User , Project , TeamProject , TeamMembership  , VirtualExperience , TaskExchange , StudentRating , JobOffer , EnterpriseProfile , Skill ,Hackathon
+from .serializers import StudentProfileSerializer , TeamProjectSerializer ,ProjectSerializer, VirtualExperienceSerializer , TaskExchangeSerializer ,StudentRatingSerializer , JobOfferSerializer , EnterpriseProfileSerializer , HackatonSerializer
  
 from rest_framework import serializers
 from rest_framework import status
@@ -658,3 +658,30 @@ class StudentSearchView(generics.ListAPIView):
 
 ###############################" 
 # "
+
+
+
+class CreateHackathonView(generics.CreateAPIView):
+    queryset = Hackathon.objects.all()
+    serializer_class = HackatonSerializer
+    #permission_classes = [IsAuthenticated]
+
+    def perform_create(self, serializer):
+        enterprise_id = self.request.data.get("enterprise")  
+        try:
+            enterprise = EnterpriseProfile.objects.get(id=enterprise_id)
+            serializer.save(enterprise=enterprise)  
+        except EnterpriseProfile.DoesNotExist:
+            return Response(
+                {"error": "Enterprise not found."}, status=status.HTTP_400_BAD_REQUEST
+            )
+
+
+
+class HackathonsByEnterpriseView(generics.ListAPIView):
+    serializer_class = HackatonSerializer
+ #   permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        enterprise_id = self.kwargs['enterprise_id']
+        return Hackathon.objects.filter(enterprise__id=enterprise_id) 

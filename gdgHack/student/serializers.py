@@ -1,7 +1,7 @@
 # serializers.py
 
 from rest_framework import serializers
-from account.models import StudentProfile, Skill ,TeamProject , VirtualExperience , Project , TaskExchange , StudentRating , JobOffer , EnterpriseProfile , TeamMembership , TeamMembership
+from account.models import StudentProfile, Skill ,TeamProject , VirtualExperience , Project , TaskExchange , StudentRating , JobOffer , EnterpriseProfile , TeamMembership , TeamMembership , Hackathon
 
 class SkillSerializer(serializers.ModelSerializer):
     class Meta:
@@ -90,7 +90,10 @@ class JobOfferSerializer(serializers.ModelSerializer):
 
 
 
-
+class HackatonSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Hackathon
+        fields='__all__'
 
 
 
