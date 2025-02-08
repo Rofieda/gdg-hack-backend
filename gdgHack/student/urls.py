@@ -20,7 +20,7 @@ urlpatterns = [
 
     path('task_exchanges/create/', CreateTaskExchangeView.as_view(), name='create_task_exchange'),
     path('task_exchangesList/<int:student_id>/', views.StudentTaskExchangeListView.as_view(), name='student_task_exchanges'),
-     path('task-exchange/join/', JoinTaskExchangeView.as_view(), name='join-task-exchange'),
+    path('task-exchange/join/', JoinTaskExchangeView.as_view(), name='join-task-exchange'),
 
 
     path('ratings/add/', AddRatingView.as_view(), name='add_rating'),  # Add a rating

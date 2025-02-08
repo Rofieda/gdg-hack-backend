@@ -9,11 +9,12 @@ class SkillSerializer(serializers.ModelSerializer):
         fields = ['id', 'name', 'description']
 
 class StudentProfileSerializer(serializers.ModelSerializer):
-    skills = SkillSerializer(many=True, read_only=True)  # Nested skills representation
+    fullname = serializers.CharField()  # Ensure fullname is included
 
     class Meta:
         model = StudentProfile
-        fields = ['id', 'user', 'bio', 'skills', 'phone', 'email', 'university']
+        fields = ['id', 'fullname', 'bio', 'skills', 'phone', 'email', 'university', 'status', 'major']
+
 
 
 
