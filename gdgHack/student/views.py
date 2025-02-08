@@ -26,6 +26,9 @@ from rest_framework import generics, permissions
 from rest_framework.permissions import AllowAny
 from django.db.models import Q
 
+from rest_framework_simplejwt.tokens import RefreshToken  # Import JWT tokens
+
+
 
 class StudentProfileCreateView(generics.CreateAPIView):
     queryset = StudentProfile.objects.all()
@@ -549,11 +552,17 @@ class RegisterEnterpriseView(CreateAPIView):
             web_site=web_site
         )
 
+        refresh = RefreshToken.for_user(user)
+        access_token = str(refresh.access_token)
+        refresh_token = str(refresh)
+
         return Response({
             "message": "Enterprise registered successfully!",
             "user_id": user.id,
             "enterprise_id": enterprise.id,
-            "email": user.email
+            "email": user.email ,
+            "access_token": access_token,  # Send access token in response
+            "refresh_token": refresh_token  
         }, status=status.HTTP_201_CREATED)
 
     
