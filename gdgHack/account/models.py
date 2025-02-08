@@ -298,6 +298,18 @@ class CompetitionParticipation(models.Model):
 
 
 
+class Internship(models.Model):
+    title = models.CharField(max_length=255)
+    description = models.TextField()
+    enterprise = models.ForeignKey(EnterpriseProfile, on_delete=models.CASCADE, related_name='internships')
+    location = models.CharField(max_length=255, blank=True)
+    start_date = models.DateField()
+    end_date = models.DateField()
+    requirements = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.title} at {self.enterprise.name}"
 
 
 
