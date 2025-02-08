@@ -507,11 +507,18 @@ class RegisterStudentView(CreateAPIView):
 
             student.skills.set(skills)  # Assign skills to student
 
+        refresh = RefreshToken.for_user(user)
+        access_token = str(refresh.access_token)
+        refresh_token = str(refresh)
+
+
         return Response({
             "message": "Student registered successfully!",
             "user_id": user.id,
             "student_id": student.id,
-            "email": user.email
+            "email": user.email,
+            "access_token": access_token,  # Send access token in response
+            "refresh_token": refresh_token 
         }, status=status.HTTP_201_CREATED)
 
     
