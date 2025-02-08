@@ -70,6 +70,10 @@ class EnterpriseProfileSerializer(serializers.ModelSerializer):
         # You can add custom validation logic here if necessary
         return data
 
+
+
+
+
 class JobOfferSerializer(serializers.ModelSerializer):
     class Meta:
         model = JobOffer

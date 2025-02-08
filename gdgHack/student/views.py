@@ -710,3 +710,24 @@ class StudentGeneralSearchView(ListAPIView):
             ).distinct()
 
         return queryset
+    
+class JobGeneralSearchView(ListAPIView):
+    serializer_class = JobOfferSerializer
+
+    def get_queryset(self):
+        queryset = JobOffer.objects.all()
+        query = self.request.query_params.get('q', None)
+
+        if query:
+            queryset = queryset.filter(
+                Q(title__icontains=query) |  
+                Q(description__icontains=query) |  
+                Q(requirements__icontains=query) |  
+                Q(salary__icontains=query) |  
+                Q(location__icontains=query) |  
+                Q(job_type__icontains=query)  
+            ).distinct()
+
+        return queryset
+
+   
