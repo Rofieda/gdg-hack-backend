@@ -301,7 +301,20 @@ class CompetitionParticipation(models.Model):
 
 
 
+class Hackathon(models.Model):
+    name = models.CharField(max_length=100)
+    description = models.TextField()
+    start_date = models.DateTimeField()
+    end_date = models.DateTimeField()
+    location = models.CharField(max_length=255, blank=True)
+    enterprise = models.ForeignKey(
+        EnterpriseProfile, 
+        on_delete=models.CASCADE, 
+        related_name='hackathons'
+    )  
 
+    def __str__(self):
+        return self.name
 
 
 

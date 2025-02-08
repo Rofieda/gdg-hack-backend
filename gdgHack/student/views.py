@@ -634,12 +634,13 @@ class StudentSearchView(generics.ListAPIView):
 
     def get_queryset(self):
         """
-        Filters students by university, major, and year of study if query parameters are provided.
+        Filters students by university, major, year of study, and skills if query parameters are provided.
         """
         queryset = StudentProfile.objects.all()
         university = self.request.query_params.get('university', None)
         major = self.request.query_params.get('major', None)
         year_studying = self.request.query_params.get('year_studying', None)
+        skill_name = self.request.query_params.get('skill', None)  # Get skill from request
 
         if university:
             queryset = queryset.filter(university=university)
@@ -647,5 +648,13 @@ class StudentSearchView(generics.ListAPIView):
             queryset = queryset.filter(major=major)
         if year_studying:
             queryset = queryset.filter(year_studying=year_studying)
+        if skill_name:
+            queryset = queryset.filter(skills__name__icontains=skill_name)  # Filter by skill name
 
         return queryset
+
+
+
+
+###############################" 
+# "
