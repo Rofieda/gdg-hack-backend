@@ -77,7 +77,7 @@ class StudentRatingSerializer(serializers.ModelSerializer):
 class EnterpriseProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = EnterpriseProfile
-        fields = ['id', 'user', 'description', 'phone', 'email', 'industry', 'location']
+        fields = ['id', 'user', 'description', 'phone', 'email', 'industry', 'location' , 'name']
 
     def validate(self, data):
         # You can add custom validation logic here if necessary
