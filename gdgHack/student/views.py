@@ -218,10 +218,10 @@ class CreateTaskExchangeView(CreateAPIView):
 
     def perform_create(self, serializer):
         student1_id = self.request.data.get('student1')  # Get student1 from request
-        student2_id = self.request.data.get('student2')  # Get student2 from request
+        student2_id = self.request.data.get('student2', None)  # Make student2 optional
 
-        if not student1_id or not student2_id:
-            raise serializers.ValidationError({"error": "Both student1 and student2 are required."})
+        if not student1_id:
+            raise serializers.ValidationError({"error": "Student1 is required."})
 
         # Validate student1 exists
         try:
@@ -229,20 +229,56 @@ class CreateTaskExchangeView(CreateAPIView):
         except StudentProfile.DoesNotExist:
             raise serializers.ValidationError({"error": "Student1 does not exist."})
 
-        # Validate student2 exists
-        try:
-            student2 = StudentProfile.objects.get(id=student2_id)
-        except StudentProfile.DoesNotExist:
-            raise serializers.ValidationError({"error": "Student2 does not exist."})
+        student2 = None
+        if student2_id:  # Only validate if student2 is provided
+            try:
+                student2 = StudentProfile.objects.get(id=student2_id)
+            except StudentProfile.DoesNotExist:
+                raise serializers.ValidationError({"error": "Student2 does not exist."})
 
         # Get status from request, default to "pending"
         status_value = self.request.data.get('status', 'pending')
         if status_value not in ['pending', 'completed']:
             raise serializers.ValidationError({"error": "Invalid status."})
 
-        # Save TaskExchange with provided students
+        # Save TaskExchange with optional student2
         serializer.save(student1=student1, student2=student2, status=status_value)
 
+class JoinTaskExchangeView(UpdateAPIView):
+    queryset = TaskExchange.objects.all()
+    serializer_class = TaskExchangeSerializer
+    permission_classes = [AllowAny]  # No authentication required
+
+    def update(self, request, *args, **kwargs):
+        exchange_id = request.data.get('exchange_id')
+        student2_id = request.data.get('student2_id')
+        task2 = request.data.get('task2')  # Get task2 from request
+
+        if not exchange_id or not student2_id or not task2:
+            return Response(
+                {"error": "exchange_id, student2_id, and task2 are required."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        try:
+            exchange = TaskExchange.objects.get(id=exchange_id)
+        except TaskExchange.DoesNotExist:
+            return Response({"error": "Exchange does not exist."}, status=status.HTTP_404_NOT_FOUND)
+
+        try:
+            student2 = StudentProfile.objects.get(id=student2_id)
+        except StudentProfile.DoesNotExist:
+            return Response({"error": "Student2 does not exist."}, status=status.HTTP_404_NOT_FOUND)
+
+        if exchange.student2:
+            return Response({"error": "This exchange already has a second student."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Assign student2 and task2
+        exchange.student2 = student2
+        exchange.task2 = task2  # ✅ Save task2 in the exchange
+        exchange.save()
+
+        return Response({"message": "Student2 successfully added to the exchange."}, status=status.HTTP_200_OK)
 
 
 
@@ -386,7 +422,20 @@ class CreateEnterpriseProfileView(CreateAPIView):
 
 
 
+class ListEnterpriseJobOffersView(ListAPIView):
+    serializer_class = JobOfferSerializer
+    permission_classes = [IsAuthenticated]
 
+    def get_queryset(self):
+        enterprise_id = self.kwargs.get('enterprise_id')  # Get the enterprise ID from URL
+        return JobOffer.objects.filter(enterprise_id=enterprise_id)
+    
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        if not queryset.exists():
+            return Response({"message": "Aucune offre d'emploi trouvée pour cette entreprise."}, status=status.HTTP_404_NOT_FOUND)
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 

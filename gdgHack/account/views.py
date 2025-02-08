@@ -163,3 +163,8 @@ class CreateUserView(APIView):
 
         # Return errors if data is invalid
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+
+

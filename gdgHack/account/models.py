@@ -207,9 +207,12 @@ class VirtualExperience(models.Model):
 
 class TaskExchange(models.Model):
     student1 = models.ForeignKey(StudentProfile, on_delete=models.CASCADE, related_name='task_exchanges_sent')
-    student2 = models.ForeignKey(StudentProfile, on_delete=models.CASCADE, related_name='task_exchanges_received')
+    student2 = models.ForeignKey(
+        StudentProfile, on_delete=models.CASCADE, related_name='task_exchanges_received',
+        null=True, blank=True  # ✅ Allow student2 to be optional
+    )
     task1 = models.CharField(max_length=255)
-    task2 = models.CharField(max_length=255)
+    task2 = models.CharField(max_length=255 , null=True )
     status = models.CharField(max_length=10, choices=[('pending', 'Pending'), ('completed', 'Completed')], default='pending')
     created_at = models.DateTimeField(auto_now_add=True)
 

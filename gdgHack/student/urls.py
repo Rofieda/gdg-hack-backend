@@ -4,7 +4,8 @@ from django.urls import path
 from .views import StudentProfileCreateView , StudentProfileRetrieveView , CreateTeamProjectView , AddMemberToTeamView ,CreateTaskExchangeView , AddRatingView , AddRatingView , StudentRatingsListView
 from .views import SearchJobByTypeView , SearchJobByLocationView , SearchJobBySalaryView , SearchJobByStartDateView , CreateJobOfferView , CreateEnterpriseProfileView , CreateTeamProjectView2 , RegisterStudentView  , RegisterEnterpriseView ,EntrpriseProfileRetrieveView 
 from . import views 
-from .views import ProjectCreateView , StudentProjectsListView  , UserProjectsView , ProjectListView  , GetStudentIDView  , StudentGeneralSearchView, StudentSearchView , CreateHackathonView , HackathonsByEnterpriseView , JobGeneralSearchView 
+from .views import ProjectCreateView , StudentProjectsListView  , UserProjectsView , ProjectListView  , GetStudentIDView  , StudentGeneralSearchView, StudentSearchView , CreateHackathonView , HackathonsByEnterpriseView , JobGeneralSearchView  , ListEnterpriseJobOffersView , JoinTaskExchangeView 
+
 urlpatterns = [
     path('studentprofile/', StudentProfileCreateView.as_view(), name='student-profile-create'), #creat             # check
     path('studentprofile/<int:id>/', StudentProfileRetrieveView.as_view(), name='student-profile-detail'),         #chck
@@ -19,6 +20,7 @@ urlpatterns = [
 
     path('task_exchanges/create/', CreateTaskExchangeView.as_view(), name='create_task_exchange'),
     path('task_exchangesList/<int:student_id>/', views.StudentTaskExchangeListView.as_view(), name='student_task_exchanges'),
+     path('task-exchange/join/', JoinTaskExchangeView.as_view(), name='join-task-exchange'),
 
 
     path('ratings/add/', AddRatingView.as_view(), name='add_rating'),  # Add a rating
@@ -36,6 +38,9 @@ urlpatterns = [
     path('jobs/search-by-date/', SearchJobByStartDateView.as_view(), name='search_job_by_date'),
 
     path('job_offers/create/', CreateJobOfferView.as_view(), name='job_offer_create'),
+    path('jobOffersList/<int:enterprise_id>/', ListEnterpriseJobOffersView.as_view(), name='list-enterprise-job-offers'),
+
+
     path('enterprise_profiles/create/', CreateEnterpriseProfileView.as_view(), name='enterprise_profile_create'),
 
     path('team_project2/create/', CreateTeamProjectView2.as_view(), name='create-team-project'),

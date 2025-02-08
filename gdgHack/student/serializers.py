@@ -39,17 +39,29 @@ class VirtualExperienceSerializer(serializers.ModelSerializer):
 
     # Optional: You can add custom validation or other logic here
 
-
 class TaskExchangeSerializer(serializers.ModelSerializer):
-    student1_id = serializers.PrimaryKeyRelatedField(source='student1', queryset=StudentProfile.objects.all())
-    student1_name = serializers.CharField(source='student1.fullname', read_only=True)
-    student2_id = serializers.PrimaryKeyRelatedField(source='student2', queryset=StudentProfile.objects.all())
-    student2_name = serializers.CharField(source='student2.fullname', read_only=True)
+    student1 = serializers.PrimaryKeyRelatedField(
+        queryset=StudentProfile.objects.all(), required=True
+    )
+    student2 = serializers.PrimaryKeyRelatedField(
+        queryset=StudentProfile.objects.all(), required=False, allow_null=True
+    )
+    student1_name = serializers.CharField(source="student1.name", read_only=True)
+    student2_name = serializers.CharField(source="student2.name", read_only=True)
 
     class Meta:
         model = TaskExchange
-        fields = ['id', 'student1_id', 'student1_name', 'student2_id', 'student2_name', 'task1', 'task2', 'status', 'created_at']
-
+        fields = [
+            "id",
+            "student1",
+            "student1_name",
+            "student2",
+            "student2_name",
+            "task1",
+            "task2",
+            "status",
+            "created_at",
+        ]
 
 
 class StudentRatingSerializer(serializers.ModelSerializer):
