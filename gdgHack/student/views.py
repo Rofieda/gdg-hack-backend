@@ -483,6 +483,7 @@ class RegisterStudentView(CreateAPIView):
 
         # Create User
         user = User.objects.create_user(email=email, password=password)
+        user.role = "student" 
         user.save()
 
         # Create StudentProfile
